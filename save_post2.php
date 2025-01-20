@@ -68,7 +68,7 @@ echo json_encode(["status" => "success", "message" => "Data saved and summarized
 // Function to call the AI API for summarization
 function generateSummary($text) {
     $apiUrl = "https://api.openai.com/v1/completions";
-    $apiKey = "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";
+    $apiKey = "secretKey";
 
     $data = [
         "prompt" => "Summarize this: $text",
