@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reddit Kamala Harris Messages</title>
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2.2em;
+      letter-spacing: 1px;
+    }
+
+    .sort-dropdown {
+      margin-bottom: 20px;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    .news-item {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      background-color: #fafafa;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .news-item:hover {
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .news-item h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.5em;
+      color: #333;
+    }
+
+    .news-item a {
+      color: #1a0dab;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .news-item a:hover {
+      text-decoration: underline;
+    }
+
+    .summarize-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .summarize-button:hover {
+      background-color: #0056b3;
+    }
+
+    #loading {
+      display: none;
+      font-weight: bold;
+      color: #666;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 600px) {
+      .news-item h3 {
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="main.php" class="back-button">Back to Main Page</a>
+    <h1>Top 10 Kamala Harris Related Posts</h1>
+    <select id="sort-options" class="sort-dropdown">
+      <option value="policy">Policy</option>
+      <option value="controversy">Controversies</option>
+      <option value="speech">Speeches</option>
+      <option value="election" selected>Election</option>
+      <option value="policy-positions">Policy Positions</option>
+      <option value="legislation-supported">Legislation Supported</option>
+      <option value="public-appearances">Public Appearances</option>
+      <option value="debate-performance">Debate Performance</option>
+      <option value="campaign-promises">Campaign Promises</option>
+      <option value="political-history">Political History</option>
+      <option value="personal-background">Personal Background</option>
+      <option value="controversies">Controversies</option>
+      <option value="speeches-interviews">Speeches & Interviews</option>
+      <option value="election-strategies">Election Strategies</option>
+      <option value="media-coverage">Media Coverage</option>
+      <option value="social-media">Social Media Posts</option>
+      <option value="endorsements-supporters">Endorsements & Supporters</option>
+      <option value="opposition">Opposition & Critics</option>
+      <option value="key-issues-focus">Key Issues Focus</option>
+      <option value="international-relations">International Relations</option>
+      <option value="poll-results">Poll Results</option>
+    </select>
+    
+    <!-- Refresh Button -->
+    <button id="refresh-button" class="back-button">Refresh News</button>
+    <button id="summarize-selected-button" class="back-button">Summarize Selected</button>
+    <button id="select-all-button" class="back-button">Select All</button>
+
+
+    <button class="summarize-button" onclick="summarizePage()">Generate Summary</button>
+  
+    <div id="overall-summary" class="news-item" style="display: none; margin-bottom: 20px; background-color: #e8f5e9;">
+      <h3>Overall Summary</h3>
+      <p id="overall-summary-text"></p>
+    </div>
+
+    <!-- Summary Type Dropdown -->
+    <select id="summary-type" class="summary-dropdown">
+      <option value="general">General Summary</option>
+      <option value="sentiment">Sentiment-Based Summary</option>
+      <option value="prompt">Prompt-Based Summary</option>
+    </select>
+    
+
+    <div id="overall-summary" class="news-item" style="display: none; margin-bottom: 20px; background-color: #e8f5e9;">
+      <h3>Overall Summary</h3>
+      <p id="overall-summary-text"></p>
+    </div>
+
+    <div id="prompt-summary" class="news-item" style="display: none; margin-bottom: 20px; background-color: #e8f5e9;">
+      <h3>Prompt Summary</h3>
+      <p id="prompt-summary-text"></p>
+    </div>
+
+    <!-- Input for prompt-based summary -->
+    <div class="input-container" id="prompt-container" style="display: none; margin-top: 20px; text-align: center;">
+      <label for="custom-input" style="font-size: 16px; margin-right: 10px;">Enter Summary Perspective:</label>
+      <input
+        type="text"
+        id="custom-input"
+        placeholder="Type your prompt here"
+        style="padding: 10px; width: 60%; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;"
+      />
+      <button
+        class="summarize-button"
+        style="padding: 10px 20px; margin-left: 10px;"
+        onclick="handleGenerateSummary()"
+      >
+        Generate Summary
+      </button>
+    </div>
+
+    <div id="news-list"></div>
+    <div class="footer">&copy; 2024 Multiple View Summarization Framework for Social Media</div>
+  </div>
+  
+
+  <script>
+    const clientId = '3Xi_WLB5USTX3KU8SzZn5A';
+    const clientSecret = 'baBcMufI-0oF5lF6rpvgUJFdZFBmcg';
+    const username = 'Suspicious-Image-531';
+    const password = 'Learti16$';
+
+    async function fetchAccessToken() {
+      const credentials = btoa(`${clientId}:${clientSecret}`);
+      const response = await fetch('https://www.reddit.com/api/v1/access_token', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `grant_type=password&username=${username}&password=${password}`
+      });
+
+      const data = await response.json();
+      return data.access_token;
+    }
+
+    async function fetchRedditPosts() {
+      const token = await fetchAccessToken();
+      const selectedTopic = document.getElementById('sort-options').value;
+      const url = `https://oauth.reddit.com/search?q=kamala+${selectedTopic}&sort=top&limit=10`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'User-Agent': 'webapp (by /u/Suspicious-Image-531)'
+          }
+        });
+
+        clearPosts()
+        const data = await response.json();
+        displayPosts(data.data.children);
+        savePostsToDatabase(data.data.children);
+      } catch (error) {
+        console.error('Error fetching data from Reddit:', error);
+      }
+    }
+
+    async function savePostsToDatabase(posts) {
+      const postData = posts.map(post => ({
+        title: post.data.title,
+        author: post.data.author,
+        date: new Date(post.data.created_utc * 1000).toISOString(),
+        permalink: `https://reddit.com${post.data.permalink}`
+      }));
+
+      try {
+        const response = await fetch('save_post2.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(postData)
+        });
+
+        const result = await response.json();
+        console.log('Data saved:', result);
+      } catch (error) {
+        console.error('Error saving data:', error);
+      }
+    }
+
+    function displayPosts(posts) {
+      const newsList = document.getElementById('news-list');
+      newsList.innerHTML = posts.map(post => createNewsItem(post.data)).join('');
+    }
+
+    function createNewsItem(post) {
+      return `
+        <div class="news-item">
+      <input type="checkbox" class="news-checkbox" id="checkbox-${post.permalink}">
+      <h3>${post.title}</h3>
+      <p><a href="https://reddit.com${post.permalink}" target="_blank">Read more</a></p>
+      <button class="summarize-button" onclick="summarizePost('${post.permalink}')">Summarize</button>
+      <div id="summary-${post.permalink}" class="summary-text"></div>
+    </div>
+      `;
+    }
+
+    async function summarizePost(permalink) {
+      const summaryType = summaryTypeDropdown.value;
+      const phpFile = phpFiles[summaryType];
+      console.log(phpFile);
+      
+      const summaryElement = document.getElementById(`summary-${permalink}`);
+      summaryElement.innerText = "Summarizing...";
+
+      const summary = await getSummaryFromAPI(permalink, phpFile); 
+      summaryElement.innerText = summary;
+    }
+
+    document.getElementById('summarize-selected-button').addEventListener('click', async function() {
+  const checkedItems = document.querySelectorAll('.news-checkbox:checked');
+
+  if (checkedItems.length === 0) {
+    alert("Please select at least one news item to summarize.");
+    return;
+  }
+
+  for (const checkbox of checkedItems) {
+    const permalink = checkbox.id.replace('checkbox-', '');
+    const summaryElement = document.getElementById(`summary-${permalink}`);
+
+    if (!summaryElement || summaryElement.innerText.trim() === '') {
+      await summarizePost(permalink);
+    } else {
+      console.log(`Summary already exists for ${permalink}.`);
+    }
+  }
+
+  alert("Selected news items have been summarized.");
+});
+
+
+    function clearPosts() {
+    const newsList = document.getElementById('news-list');
+    newsList.innerHTML = '';
+    }
+
+    async function summarizePage() {
+    const summaries = [];
+    const newsItems = document.querySelectorAll('.news-item');
+    
+    // Collect summaries for each news item
+    for (const newsItem of newsItems) {
+      const summaryElement = newsItem.querySelector('.summary-text');
+      if (summaryElement && summaryElement.innerText) {
+        summaries.push(summaryElement.innerText.trim());
+      }
+    };
+
+    // Check if there are summaries to process
+    if (summaries.length === 0) {
+      alert("No summaries available to generate an overall summary.");
+      return;
+    }
+
+      console.log("summaries: ", summaries);
+    try {
+      // Send the collected summaries to the backend for overall summarization
+      const response = await fetch('summarizepage.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ summaries })
+      });
+
+      const data = await response.json();
+
+      console.log("overallsummary: ", data.summary);
+      
+      // Display the overall summary in the placeholder
+    const overallSummaryElement = document.getElementById('overall-summary');
+    const overallSummaryText = document.getElementById('overall-summary-text');
+
+    overallSummaryText.innerText = data.summary;
+    overallSummaryElement.style.display = 'block';
+
+    } catch (error) {
+      console.error("Error generating overall summary:", error);
+      alert("Failed to generate the overall summary. Please try again.");
+    }
+  }
+
+  async function getSummaryFromAPI(permalink, selection) {
+  try {
+    const response = await fetch(selection, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ permalink: permalink })
+    });
+
+    // Log the raw response before parsing it
+    const rawResponse = await response.text();
+    console.log("Raw Response:", rawResponse);
+
+    // Now attempt to parse the JSON response
+    const summary = JSON.parse(rawResponse);
+    return summary.summary;
+  } catch (error) {
+    console.error('Error fetching summary:', error);
+    return "Error fetching summary.";
+  }
+}
+
+    document.getElementById('select-all-button').addEventListener('click', function() {
+  const checkboxes = document.querySelectorAll('.news-checkbox');
+  const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+  // Toggle based on current state: if all are checked, uncheck all; otherwise, check all
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = !allChecked;
+  });
+});
+const phpFiles = {
+      general: 'summarize_post.php',
+      sentiment: 'summarize_post2.php',
+      prompt: 'summarize_post3.php'
+    };
+
+    const summaryTypeDropdown = document.getElementById('summary-type');
+    const promptContainer = document.getElementById('prompt-container');
+
+    summaryTypeDropdown.addEventListener('change', () => {
+      promptContainer.style.display = summaryTypeDropdown.value === 'prompt' ? 'block' : 'none';
+    });
+    
+    document.getElementById('refresh-button').addEventListener('click', function() {
+    fetchRedditPosts();
+  });
+
+  document.getElementById('sort-options').addEventListener('change', function() {
+    fetchRedditPosts();
+  });
+
+    fetchRedditPosts();
+
+async function handleGenerateSummary() {
+    const summaries = [];
+    const newsItems = document.querySelectorAll('.news-item');
+
+    // Get the value from the input field
+    const inputValue = document.getElementById('custom-input').value;
+
+    // Validate that the input is not empty
+    if (!inputValue.trim()) {
+      alert('Please enter some text to generate a summary.');
+      return;
+    }
+    
+    
+    // Collect summaries for each news item
+    for (const newsItem of newsItems) {
+      const summaryElement = newsItem.querySelector('.summary-text');
+      if (summaryElement && summaryElement.innerText) {
+        summaries.push(summaryElement.innerText.trim());
+      }
+    }
+
+    // Check if there are summaries to process
+    if (summaries.length === 0) {
+      alert("No summaries available to generate an overall summary.");
+      return;
+    }
+
+    summaries.push("Summarize all these previous posts with this in mind: " + inputValue.trim());
+
+      console.log("summaries: ", summaries);
+    try {
+      // Send the collected summaries to the backend for overall summarization
+      const response = await fetch('summarizepage3.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ summaries })
+      });
+
+      const data = await response.json();
+
+      console.log("overallsummary: ", data.summary);
+      // Display the overall summary
+      const overallSummaryElement = document.createElement('div');
+      overallSummaryElement.classList.add('news-item');
+      overallSummaryElement.innerHTML = `
+        <h3>Overall Summary</h3>
+        <p>${data.summary}</p>
+      `;
+      const promptSummaryElement = document.getElementById('prompt-summary');
+      const promptSummaryText = document.getElementById('prompt-summary-text');
+
+      promptSummaryText.innerText = data.summary;
+      promptSummaryElement.style.display = 'block';
+
+    } catch (error) {
+      console.error("Error generating overall summary:", error);
+      alert("Failed to generate the overall summary. Please try again.");
+    }
+  }
+
+  </script>
+</body>
+</html>
